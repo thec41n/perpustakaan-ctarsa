@@ -74,7 +74,7 @@
                 <label for="cover_image">Upload Cover Buku (Image):</label>
                 <input type="file" class="form-control" id="cover_image" name="cover_image">
             </div>
-            <button type="submit" class="btn btn-success">{{ isset($book) ? 'Update' : 'Simpan' }}</button>
+            <button type="submit" class="btn mb-2 btn-success">{{ isset($book) ? 'Update' : 'Simpan' }}</button>
         </form>
     </div>
 @endsection

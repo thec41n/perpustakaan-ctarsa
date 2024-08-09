@@ -3,9 +3,12 @@
 @section('content')
     <div class="container">
         <h1>{{ isset($book) ? 'Edit' : 'Tambah' }} Buku</h1>
+
+        <!-- Form untuk update buku -->
         <form action="{{ route('books.update', $book->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
+
             <div class="form-group">
                 <label for="title">Judul Buku:</label>
                 <input type="text" class="form-control" id="title" name="title"
@@ -14,19 +17,22 @@
                     <div class="alert alert-danger">{{ $message }}</div>
                 @enderror
             </div>
+
             <div class="form-group">
                 <label for="category_id">Kategori:</label>
                 <select class="form-control" id="category_id" name="category_id">
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}"
                             {{ isset($book) && $book->category_id == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}</option>
+                            {{ $category->name }}
+                        </option>
                     @endforeach
                 </select>
                 @error('category_id')
                     <div class="alert alert-danger">{{ $message }}</div>
                 @enderror
             </div>
+
             <div class="form-group">
                 <label for="author">Penulis:</label>
                 <input type="text" class="form-control" id="author" name="author"
@@ -35,6 +41,7 @@
                     <div class="alert alert-danger">{{ $message }}</div>
                 @enderror
             </div>
+
             <div class="form-group">
                 <label for="publisher">Penerbit:</label>
                 <input type="text" class="form-control" id="publisher" name="publisher"
@@ -43,6 +50,7 @@
                     <div class="alert alert-danger">{{ $message }}</div>
                 @enderror
             </div>
+
             <div class="form-group">
                 <label for="year">Tahun Terbit:</label>
                 <input type="text" class="form-control" id="year" name="year"
@@ -51,6 +59,7 @@
                     <div class="alert alert-danger">{{ $message }}</div>
                 @enderror
             </div>
+
             <div class="form-group">
                 <label for="description">Deskripsi:</label>
                 <textarea class="form-control" id="description" name="description" required>{{ isset($book) ? $book->description : '' }}</textarea>
@@ -58,6 +67,7 @@
                     <div class="alert alert-danger">{{ $message }}</div>
                 @enderror
             </div>
+
             <div class="form-group">
                 <label for="quantity">Jumlah:</label>
                 <input type="number" class="form-control" id="quantity" name="quantity"
@@ -66,21 +76,21 @@
                     <div class="alert alert-danger">{{ $message }}</div>
                 @enderror
             </div>
+
             <div class="form-group">
                 <label for="file_path">Upload File Buku (PDF):</label>
                 <input type="file" class="form-control" id="file_path" name="file_path">
             </div>
+
             <div class="form-group">
                 <label for="cover_image">Upload Cover Buku (Image):</label>
                 <input type="file" class="form-control" id="cover_image" name="cover_image">
             </div>
-            <button type="submit" class="btn btn-success">{{ isset($book) ? 'Update' : 'Simpan' }}</button>
-            <form action="{{ route('books.destroy', $book->id) }}" method="POST" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger"
-                    onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?')">Hapus</button>
-            </form>
+            <div class="form-row">
+                <div class="col-auto">
+                    <button type="submit" class="btn mb-2 btn-success">{{ isset($book) ? 'Update' : 'Simpan' }}</button>
+                </div>
+            </div>
         </form>
     </div>
 @endsection

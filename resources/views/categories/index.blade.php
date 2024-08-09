@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h1>Kategori Buku</h1>
-    <a href="{{ route('categories.create') }}" class="btn btn-primary">Tambah Kategori</a>
+    <a href="{{ route('categories.create') }}" class="btn mb-2 btn-primary">Tambah Kategori</a>
     <table class="table">
         <thead>
             <tr>

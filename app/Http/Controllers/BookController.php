@@ -14,10 +14,17 @@ use Illuminate\Support\Facades\Storage;
 class BookController extends Controller
 {
     // Menampilkan semua buku
-    public function index()
+    public function index(Request $request)
     {
         $books = Book::with('category')->get();
-        return view('books.index', compact('books'));
+        $perPage = 10;
+        $page = $request->input('page', 1);
+        $total = Book::count();
+
+        $books = Book::skip(($page - 1) * $perPage)->take($perPage)->get();
+
+        $totalPages = ceil($total / $perPage);
+        return view('books.index', compact('books', 'totalPages', 'page'));
     }
 
     // Menampilkan form untuk membuat buku baru
@@ -111,15 +118,15 @@ class BookController extends Controller
         return Excel::download(new BooksExport, 'books.xlsx');
     }
 
-    public function exportPDF(PDF $pdf) 
+    public function exportPDF(PDF $pdf)
     {
-        $books = Book::all(); 
+        $books = Book::all();
 
         // HTML content
         $html = view('books.pdf', compact('books'))->render();
 
         // Memuat HTML ke PDF
-        $pdf = $pdf->loadHTML($html); 
-        return $pdf->download('books.pdf'); 
+        $pdf = $pdf->loadHTML($html);
+        return $pdf->download('books.pdf');
     }
 }

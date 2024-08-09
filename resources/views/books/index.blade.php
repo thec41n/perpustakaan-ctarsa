@@ -19,13 +19,13 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($books as $book)
+                @forelse ($books as $book)
                     <tr>
                         <td>{{ $book->title }}</td>
                         <td>{{ $book->category->name }}</td>
                         <td>{{ $book->author }}</td>
                         <td>
-                            <a href="#viewImageModal" data-toggle="modal" data-target="#viewImageModal"
+                            <a href="#viewImageModal{{ $book->id }}" data-toggle="modal" data-target="#viewImageModal{{ $book->id }}"
                                 data-image="{{ asset('storage/' . $book->cover_image) }}">
                                 <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover"
                                     style="width: 100px; height: auto;">
@@ -41,34 +41,56 @@
                             </form>
                         </td>
                     </tr>
-                @endforeach
+
+                    <!-- Modal for each book -->
+                    <div class="modal fade" id="viewImageModal{{ $book->id }}" tabindex="-1" role="dialog" aria-labelledby="viewImageModalLabel{{ $book->id }}"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="viewImageModalLabel{{ $book->id }}">Gambar Cover Buku</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <img id="modalImage{{ $book->id }}" src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover"
+                                        style="max-width: 100%; max-height: 600px; width: auto; height: auto;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <tr><td colspan="5">Tidak ada buku tersedia.</td></tr>
+                @endforelse
             </tbody>
         </table>
-        <div class="modal fade" id="viewImageModal" tabindex="-1" role="dialog" aria-labelledby="viewImageModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="viewImageModalLabel">Gambar Cover Buku</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <img id="modalImage" src=""
-                            style="max-width: 100%; max-height: 600px; width: auto; height: auto;" alt="Cover">
-                    </div>
-                </div>
-            </div>
+        <!-- Pagination -->
+        <div class="pagination">
+            @if ($page > 1)
+                <a href="{{ route('books.index', ['page' => $page - 1]) }}">&laquo; Previous</a>
+            @endif
+
+            @for ($i = 1; $i <= $totalPages; $i++)
+                <a href="{{ route('books.index', ['page' => $i]) }}"
+                    class="{{ $i == $page ? 'active' : '' }}">{{ $i }}</a>
+            @endfor
+
+            @if ($page < $totalPages)
+                <a href="{{ route('books.index', ['page' => $page + 1]) }}">Next &raquo;</a>
+            @endif
         </div>
     </div>
 @endsection
 
 <script>
-    $('#viewImageModal').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget);
-        var imageUrl = button.data('image');
-        var modal = $(this);
-        modal.find('#modalImage').attr('src', imageUrl);
+    $(document).ready(function () {
+        $('.modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var imageUrl = button.data('image');
+            var modalId = $(this).attr('id');
+            var modalImage = $('#modalImage' + modalId.replace('viewImageModal', ''));
+            modalImage.attr('src', imageUrl);
+        });
     });
 </script>
