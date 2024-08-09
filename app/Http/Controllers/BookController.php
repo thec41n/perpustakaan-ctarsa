@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Category;
+use Barryvdh\DomPDF\PDF;
+use App\Exports\BooksExport;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
@@ -94,5 +97,17 @@ class BookController extends Controller
     {
         Book::findOrFail($id)->delete();
         return redirect()->route('books.index')->with('success', 'Buku berhasil dihapus.');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new BooksExport, 'books.xlsx');
+    }
+
+    public function exportPDF()
+    {
+        $books = Book::all();
+        $pdf = PDF::loadView('books.pdf', compact('books'));
+        return $pdf->download('books.pdf');
     }
 }
