@@ -2,63 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Menampilkan semua kategori
     public function index()
     {
-        //
+        $categories = Category::all();
+        return view('categories.index', compact('categories'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // Menampilkan form untuk membuat kategori baru
     public function create()
     {
-        //
+        return view('categories.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Menyimpan kategori baru ke database
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255'
+        ]);
+
+        Category::create($request->all());
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    // Menampilkan form untuk mengedit kategori
+    public function edit($id)
     {
-        //
+        $category = Category::findOrFail($id);
+        return view('categories.edit', compact('category'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    // Memperbarui kategori di database
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255'
+        ]);
+
+        $category = Category::findOrFail($id);
+        $category->update($request->all());
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbarui.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    // Menghapus kategori
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        Category::findOrFail($id)->delete();
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus.');
     }
 }
