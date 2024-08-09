@@ -4,10 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HomeController;
 
-Route::get('/', function () {
-    return view('layouts.app');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Routes for category management
 Route::resource('categories', CategoryController::class);

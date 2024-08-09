@@ -3,8 +3,7 @@
 @section('content')
     <div class="container">
         <h1>{{ isset($book) ? 'Edit' : 'Tambah' }} Buku</h1>
-        <form action="{{ route('books.update', $book->id) }}" method="POST"
-            enctype="multipart/form-data">
+        <form action="{{ route('books.update', $book->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="form-group">
@@ -53,6 +52,13 @@
                 @enderror
             </div>
             <div class="form-group">
+                <label for="description">Deskripsi:</label>
+                <textarea class="form-control" id="description" name="description" required>{{ isset($book) ? $book->description : '' }}</textarea>
+                @error('description')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="form-group">
                 <label for="quantity">Jumlah:</label>
                 <input type="number" class="form-control" id="quantity" name="quantity"
                     value="{{ isset($book) ? $book->quantity : '' }}" required>
@@ -69,6 +75,12 @@
                 <input type="file" class="form-control" id="cover_image" name="cover_image">
             </div>
             <button type="submit" class="btn btn-success">{{ isset($book) ? 'Update' : 'Simpan' }}</button>
+            <form action="{{ route('books.destroy', $book->id) }}" method="POST" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger"
+                    onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?')">Hapus</button>
+            </form>
         </form>
     </div>
 @endsection

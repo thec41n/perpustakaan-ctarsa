@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Book;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class BookSeeder extends Seeder
 {
@@ -23,5 +24,7 @@ class BookSeeder extends Seeder
             'file_path' => '/path/to/file.pdf',
             'cover_image' => '/path/to/cover.jpg'
         ]);
+
+        Book::factory()->count(50)->create();
     }
 }

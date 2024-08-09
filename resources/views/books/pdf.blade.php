@@ -32,6 +32,7 @@
                 <th>Kategori ID</th>
                 <th>Penulis</th>
                 <th>Penerbit</th>
+                <th>Cover</th>
                 <th>Tahun</th>
                 <th>Deskripsi</th>
                 <th>Jumlah</th>
@@ -45,6 +46,7 @@
                     <td>{{ $book->category_id }}</td>
                     <td>{{ $book->author }}</td>
                     <td>{{ $book->publisher }}</td>
+                    <td><img src="{{ public_path('storage/' . $book->cover_image) }}" style="width: 100px; height: auto;" alt="Cover"></td>
                     <td>{{ $book->year }}</td>
                     <td>{{ $book->description }}</td>
                     <td>{{ $book->quantity }}</td>

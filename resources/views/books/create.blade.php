@@ -52,6 +52,13 @@
                 @enderror
             </div>
             <div class="form-group">
+                <label for="description">Deskripsi:</label>
+                <textarea class="form-control" id="description" name="description" required>{{ isset($book) ? $book->description : '' }}</textarea>
+                @error('description')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="form-group">
                 <label for="quantity">Jumlah:</label>
                 <input type="number" class="form-control" id="quantity" name="quantity"
                     value="{{ isset($book) ? $book->quantity : '' }}" required>
