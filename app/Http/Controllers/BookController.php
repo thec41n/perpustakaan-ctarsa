@@ -7,6 +7,7 @@ use App\Models\Category;
 use Barryvdh\DomPDF\PDF;
 use App\Exports\BooksExport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 
@@ -40,7 +41,7 @@ class BookController extends Controller
             'cover_image' => 'required|image'
         ]);
 
-        $book = new Book($request->all());
+        $book = new Book($request->except(['file_path', 'cover_image']));
         if ($request->hasFile('file_path')) {
             $book->file_path = $request->file('file_path')->store('pdfs', 'public');
         }
@@ -49,7 +50,6 @@ class BookController extends Controller
         }
         $book->save();
 
-        Book::create($request->all());
         return redirect()->route('books.index')->with('success', 'Buku berhasil ditambahkan.');
     }
 
@@ -57,6 +57,11 @@ class BookController extends Controller
     public function edit($id)
     {
         $book = Book::findOrFail($id);
+
+        if (Auth::user()->role != 'admin' && Auth::user()->id != $book->user_id) {
+            return redirect()->route('books.index')->with('error', 'Anda tidak memiliki akses untuk mengedit buku ini.');
+        }
+
         $categories = Category::all();
         return view('books.edit', compact('book', 'categories'));
     }
@@ -75,27 +80,29 @@ class BookController extends Controller
 
         $book = Book::findOrFail($id);
         if ($request->hasFile('file_path')) {
-            // Delete old file
             Storage::delete('public/' . $book->file_path);
-            // Upload new file
             $book->file_path = $request->file('file_path')->store('pdfs', 'public');
         }
         if ($request->hasFile('cover_image')) {
-            // Delete old image
             Storage::delete('public/' . $book->cover_image);
-            // Upload new image
             $book->cover_image = $request->file('cover_image')->store('covers', 'public');
         }
         $book->update($request->all());
 
-        $book->update($request->all());
         return redirect()->route('books.index')->with('success', 'Buku berhasil diperbarui.');
     }
 
     // Menghapus buku
     public function destroy($id)
     {
-        Book::findOrFail($id)->delete();
+        $book = Book::findOrFail($id);
+
+        if (Auth::user()->role != 'admin' && Auth::user()->id != $book->user_id) {
+            return redirect()->route('books.index')->with('error', 'Anda tidak memiliki akses untuk menghapus buku ini.');
+        }
+
+        $book->delete();
+
         return redirect()->route('books.index')->with('success', 'Buku berhasil dihapus.');
     }
 
@@ -104,10 +111,15 @@ class BookController extends Controller
         return Excel::download(new BooksExport, 'books.xlsx');
     }
 
-    public function exportPDF()
+    public function exportPDF(PDF $pdf) 
     {
-        $books = Book::all();
-        $pdf = PDF::loadView('books.pdf', compact('books'));
-        return $pdf->download('books.pdf');
+        $books = Book::all(); 
+
+        // HTML content
+        $html = view('books.pdf', compact('books'))->render();
+
+        // Memuat HTML ke PDF
+        $pdf = $pdf->loadHTML($html); 
+        return $pdf->download('books.pdf'); 
     }
 }

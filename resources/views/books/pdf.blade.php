@@ -3,6 +3,23 @@
 
 <head>
     <title>Daftar Buku</title>
+    <style>
+        body {
+            font-family: 'Helvetica';
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
 </head>
 
 <body>

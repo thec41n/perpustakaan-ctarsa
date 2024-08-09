@@ -3,16 +3,16 @@
 @section('content')
     <div class="container">
         <h1>{{ isset($book) ? 'Edit' : 'Tambah' }} Buku</h1>
-        <form action="{{ isset($book) ? route('books.update', $book->id) : route('books.store') }}" method="POST"
-            enctype="multipart/form-data">
+        <form action="{{ route('books.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            @if (isset($book))
-                @method('PUT')
-            @endif
+            @method('POST')
             <div class="form-group">
                 <label for="title">Judul Buku:</label>
                 <input type="text" class="form-control" id="title" name="title"
                     value="{{ isset($book) ? $book->title : '' }}" required>
+                @error('title')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
             </div>
             <div class="form-group">
                 <label for="category_id">Kategori:</label>
@@ -23,25 +23,41 @@
                             {{ $category->name }}</option>
                     @endforeach
                 </select>
+                @error('category_id')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
             </div>
             <div class="form-group">
                 <label for="author">Penulis:</label>
                 <input type="text" class="form-control" id="author" name="author"
                     value="{{ isset($book) ? $book->author : '' }}" required>
+                @error('author')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
             </div>
             <div class="form-group">
                 <label for="publisher">Penerbit:</label>
                 <input type="text" class="form-control" id="publisher" name="publisher"
                     value="{{ isset($book) ? $book->publisher : '' }}" required>
+                @error('publisher')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
             </div>
             <div class="form-group">
                 <label for="year">Tahun Terbit:</label>
                 <input type="text" class="form-control" id="year" name="year"
                     value="{{ isset($book) ? $book->year : '' }}" required>
+                @error('year')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
             </div>
             <div class="form-group">
-                <label for="quantity">Jumlah:</label <input type="number" class="form-control" id="quantity"
-                    name="quantity" value="{{ isset($book) ? $book->quantity : '' }}" required>
+                <label for="quantity">Jumlah:</label>
+                <input type="number" class="form-control" id="quantity" name="quantity"
+                    value="{{ isset($book) ? $book->quantity : '' }}" required>
+                @error('year')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
             </div>
             <div class="form-group">
                 <label for="file_path">Upload File Buku (PDF):</label>
