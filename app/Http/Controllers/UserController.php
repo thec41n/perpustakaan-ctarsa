@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -35,25 +36,30 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
-    // Menampilkan form untuk mengedit pengguna
-    public function edit($id)
+    public function edit()
     {
-        $user = User::findOrFail($id);
-        return view('users.edit', compact('user'));
+        $user = auth()->user();
+        return view('profile.profile', compact('user'));
     }
 
     // Memperbarui pengguna di database
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
+        $user = auth()->user();
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'role' => 'required'
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:6|confirmed'
         ]);
 
-        $user = User::findOrFail($id);
-        $user->update($request->all());
-        return redirect()->route('users.index')->with('success', 'Pengguna berhasil diperbarui.');
+        $user->name = $request->name;
+        $user->email = $request->email;
+        if ($request->password) {
+            $user->password = Hash::make($request->password);
+        }
+        $user->save();
+
+        return redirect()->route('profile.edit')->with('status', 'Profil berhasil diperbarui.');
     }
 
     // Menghapus pengguna
