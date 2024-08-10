@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Book;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -13,8 +14,10 @@ class BookSeeder extends Seeder
      */
     public function run()
     {
+        $user_id = User::inRandomOrder()->first()->id;
         \App\Models\Book::create([
             'title' => 'Pengantar Algoritma',
+            'user_id' => $user_id,
             'category_id' => 2,
             'author' => 'John Doe',
             'publisher' => 'XYZ Publisher',

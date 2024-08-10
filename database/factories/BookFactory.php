@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,6 +20,7 @@ class BookFactory extends Factory
     {
         return [
             'title' => $this->faker->sentence,
+            'user_id' => User::inRandomOrder()->first()->id,
             'category_id' => Category::pluck('id')->random(),
             'author' => $this->faker->name,
             'publisher' => $this->faker->company,

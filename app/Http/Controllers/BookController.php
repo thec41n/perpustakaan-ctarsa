@@ -16,15 +16,34 @@ class BookController extends Controller
     // Menampilkan semua buku
     public function index(Request $request)
     {
-        $books = Book::with('category')->get();
-        $perPage = 10;
-        $page = $request->input('page', 1);
-        $total = Book::count();
+        $search = $request->input('search');
+        $query = Book::with('category');
 
-        $books = Book::skip(($page - 1) * $perPage)->take($perPage)->get();
+        // Mengaplikasikan pencarian jika parameter 'search' diberikan
+        if ($search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('author', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($subQuery) use ($search) {
+                        $subQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
 
-        $totalPages = ceil($total / $perPage);
-        return view('books.index', compact('books', 'totalPages', 'page'));
+        // Hanya menampilkan buku yang sesuai dengan user yang login kecuali untuk admin
+        if (Auth::user()->role !== 'admin') {
+            $query->where('user_id', Auth::id());
+        }
+
+        // Mengimplementasikan pagination
+        $books = $query->paginate(10);
+        $books->appends(['search' => $search]); // Menyertakan pencarian dalam link pagination
+
+        return view('books.index', [
+            'books' => $books,
+            'totalPages' => $books->lastPage(), // Mendapatkan jumlah total halaman
+            'page' => $books->currentPage() // Mendapatkan halaman saat ini
+        ]);
     }
 
     // Menampilkan form untuk membuat buku baru
@@ -55,6 +74,7 @@ class BookController extends Controller
         if ($request->hasFile('cover_image')) {
             $book->cover_image = $request->file('cover_image')->store('covers', 'public');
         }
+        $book->user_id = auth()->id();
         $book->save();
 
         return redirect()->route('books.index')->with('success', 'Buku berhasil ditambahkan.');
@@ -64,10 +84,7 @@ class BookController extends Controller
     public function edit($id)
     {
         $book = Book::findOrFail($id);
-
-        if (Auth::user()->role != 'admin' && Auth::user()->id != $book->user_id) {
-            return redirect()->route('books.index')->with('error', 'Anda tidak memiliki akses untuk mengedit buku ini.');
-        }
+        $this->authorize('update', $book);
 
         $categories = Category::all();
         return view('books.edit', compact('book', 'categories'));
@@ -103,11 +120,9 @@ class BookController extends Controller
     public function destroy($id)
     {
         $book = Book::findOrFail($id);
+        $this->authorize('delete', $book);
 
-        if (Auth::user()->role != 'admin' && Auth::user()->id != $book->user_id) {
-            return redirect()->route('books.index')->with('error', 'Anda tidak memiliki akses untuk menghapus buku ini.');
-        }
-
+        Storage::delete(['public/' . $book->file_path, 'public/' . $book->cover_image]);
         $book->delete();
 
         return redirect()->route('books.index')->with('success', 'Buku berhasil dihapus.');
@@ -120,7 +135,7 @@ class BookController extends Controller
 
     public function exportPDF(PDF $pdf)
     {
-        $books = Book::all();
+        $books = Auth::user()->role === 'admin' ? Book::all() : Auth::user()->books;
 
         // HTML content
         $html = view('books.pdf', compact('books'))->render();

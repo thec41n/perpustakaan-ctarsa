@@ -27,7 +27,7 @@
                 <form class="login100-form validate-form" method="POST" action="{{ route('login') }}">
                     @csrf
                     <span class="login100-form-title p-b-26">
-                        Selamat Datang
+                        Perpustakaan CTARSA
                     </span>
 
                     <!-- Display errors -->

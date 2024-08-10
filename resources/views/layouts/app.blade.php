@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perpustakaan Digital</title>
     <!-- Link to Bootstrap CSS -->
-    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
 
@@ -60,9 +60,11 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('categories.index') }}">Kategori</a>
-                </li>
+                @if (Auth::check() && Auth::user()->role === 'admin')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('categories.index') }}">Kategori</a>
+                    </li>
+                @endif
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('books.index') }}">Buku</a>
                 </li>
@@ -103,10 +105,21 @@
         @yield('content')
     </div>
     <!-- Link to Bootstrap JS and jQuery -->
-    <script src="{{ asset('js/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/jquery/jquery-3.2.1.min.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.modal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var imageUrl = button.data('image');
+                var modalId = $(this).attr('id');
+                var modalImage = $('#modalImage' + modalId.replace('viewImageModal', ''));
+                modalImage.attr('src', imageUrl);
+            });
+        });
+    </script>
 </body>
 
 </html>

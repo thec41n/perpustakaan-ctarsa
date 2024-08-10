@@ -17,12 +17,14 @@ class CategoryController extends Controller
     // Menampilkan form untuk membuat kategori baru
     public function create()
     {
+        $this->authorize('create', Category::class);
         return view('categories.create');
     }
 
     // Menyimpan kategori baru ke database
     public function store(Request $request)
     {
+        $this->authorize('create', Category::class);
         $request->validate([
             'name' => 'required|string|max:255'
         ]);

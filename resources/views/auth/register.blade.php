@@ -25,7 +25,7 @@
                 <form class="login100-form validate-form" method="POST" action="{{ route('register') }}">
                     @csrf
                     <span class="login100-form-title p-b-26">
-                        Sign Up
+                        Perpustakaan CTARSA
                     </span>
                     <!-- Display errors -->
                     @if ($errors->any())
